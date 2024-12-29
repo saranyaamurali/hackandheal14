@@ -8,232 +8,445 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(120deg, #1d1e26, #31334a);
-            color: #ffffff;
-        }
+*{
+    color: rgb(8, 107, 188);
+}
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(120deg, #ffffff, #ffffff);
+    color: #ecf0f1;
+}
 
-        h1 {
-            text-align: center;
-            margin: 20px 0;
-            font-size: 3rem;
-            color: rgb(68, 183, 68);
-        }
+h1 {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 3rem;
+    color: rgb(8, 107, 188);
+}
 
-        .dashboard-container {
-            display: grid;
-            grid-template-areas:
-                "left center right"
-                "left center right";
-            grid-template-columns: 1fr 2fr 1fr;
-            gap: 20px;
-            padding: 20px;
-            height: calc(100vh - 100px);
-        }
+.dashboard-container {
+    display: grid;
+    grid-template-areas:
+        "left center right"
+        "left center right";
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 20px;
+    padding: 20px;
+    height: calc(100vh - 100px);
+}
 
-        .card {
-            background: rgba(20, 20, 20, 0.9);
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+.card {
+    background: rgb(255, 255, 255);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 0 15px rgb(8, 107, 188);;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.center-card {
+    grid-area: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: none;
+    box-shadow: none;
+}
+
+.heatmap-container {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    height: 800px;
+    margin: 0 auto;
+}
+
+.heatmap-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    position: relative;
+    bottom: 180px;
+    z-index: 1;
+}
+
+svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+.body-part {
+    fill: rgba(241, 196, 15, 0.3);
+    cursor: pointer;
+    transition: fill 0.3s;
+    border: white;
+    box-shadow: 3px 7px white;
+}
+
+.body-part:hover {
+    fill: rgba(241, 196, 15, 0.7);
+}
+
+.tooltip {
+    position: absolute;
+    background: rgba(231, 76, 60, 0.9);
+    color: #ffffff;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    display: none;
+    z-index: 10;
+}
+.legend {
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            flex-wrap: wrap;
             justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            position: relative;
+            z-index: 5;
         }
 
-        .center-card {
-            grid-area: center;
+        .legend-item {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            position: relative;
-            background: none;
-            box-shadow: none;
-        }
-
-        .heatmap-container {
-            position: relative;
-            width: 100%;
-            max-width: 500px;
-            height: 800px;
-            margin: 0 auto;
-        }
-
-        .heatmap-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            position: relative;
-            bottom: 180px;
-            z-index: 1;
-        }
-
-        svg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 2;
-            
-        }
-
-        .body-part {
-            fill: rgba(130, 218, 148, 0.3);
-            cursor: pointer;
-            transition: fill 0.3s;
-            border: white;
-            box-shadow: 3px 7px white;
-        }
-
-        .body-part:hover {
-            fill: rgba(110, 202, 130, 0.7);
-        }
-
-        .tooltip {
-            position: absolute;
-            background: rgba(151, 104, 127, 0.9);
-            color: #ffffff;
-            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px 10px;
             border-radius: 8px;
-            font-size: 0.9rem;
-            display: none;
-            z-index: 10;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
         }
 
-        .left-card, .right-card {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .stat-box {
-            background: rgba(30, 30, 30, 0.9);
-            border-radius: 10px;
-            padding: 15px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 0 10px rgba(0, 255, 200, 0.5);
-        }
-
-        .stat-box h3 {
-            margin-bottom: 10px;
-            color: #00e4ff;
-            text-shadow: 0 0 5px #00e4ff;
-        }
-
-        .progress-bar {
-            width: 100%;
+        .legend-color {
+            width: 20px;
             height: 20px;
-            background: rgba(50, 50, 50, 0.8);
-            border-radius: 10px;
-            position: relative;
-            overflow: hidden;
+            border-radius: 50%;
+            margin-right: 8px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
         }
 
-        .progress-bar span {
-            display: block;
-            height: 100%;
-            background: linear-gradient(90deg, #00ff00, #00e4ff);
-            position: absolute;
-            left: 0;
-            top: 0;
+        .legend-label {
+            color: black;
+            font-size: 0.9rem;
+            font-weight: bold;
         }
+.left-card, .right-card {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
 
-        .chart-container {
-            position: relative;
-            width: 100%;
-        }
+.stat-box {
+    background: rgb(255, 255, 255);
+    border-radius: 10px;
+    padding: 15px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 0 10px rgb(8, 107, 188);;
+}
 
-        #file-input {
-            margin: 40px;
-            padding: 20px;
-        }
+.stat-box h3 {
+    margin-bottom: 10px;
+    color: #1abc9c;
+    text-shadow: 0 0 5px #1abc9c;
+}
 
-        /* Hide the actual file input */
-        #excelFile {
-            display: none;
-        }
+.progress-bar {
+    width: 100%;
+    height: 20px;
+    background: rgb(255, 255, 255);
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+}
 
-        /* Button Styling */
-        button {
-            align-items: center;
-            background-image: linear-gradient(144deg, #af40ff, #5b42f3 50%, #00ddeb);
-            border: 0;
-            border-radius: 8px;
-            box-shadow: rgba(151, 65, 252, 0.2) 0 15px 30px -5px;
-            box-sizing: border-box;
-            color: #ffffff;
-            display: flex;
-            font-size: 18px;
-            justify-content: center;
-            line-height: 1em;
-            max-width: 100%;
-            min-width: 140px;
-            padding: 3px;
-            text-decoration: none;
-            user-select: none;
-            -webkit-user-select: none;
-            touch-action: manipulation;
-            white-space: nowrap;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
+.progress-bar span {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, #1abc9c, #16a085);
+    position: absolute;
+    left: 0;
+    top: 0;
+}
 
-        button:active,
-        button:hover {
-            outline: 0;
-        }
+.chart-container {
+    position: relative;
+    width: 100%;
+}
 
-        button span {
-            background-color: rgb(5, 6, 45);
-            padding: 16px 24px;
-            border-radius: 6px;
-            width: 100%;
-            height: 100%;
-            transition: 300ms;
-        }
+#file-input {
+    margin: 40px;
+    padding: 20px;
+}
 
-        button:hover span {
-            background: none;
-        }
+/* Hide the actual file input */
+#excelFile {
+    display: none;
+}
 
-        button:active {
-            transform: scale(0.9);
-        }
+/* Button Styling */
+button {
+    align-items: center;
+    height: 39px;
+    background-color: rgb(8, 107, 188);;
+    border: 0;
+    border-radius: 8px;
+    box-shadow: rgb(8, 107, 188);;
+    box-sizing: border-box;
+    color: #ffffff;
+    display: flex;
+    font-size: 18px;
+    justify-content: center;
+    line-height: 1em;
+    max-width : 100%;
+    min-width: 140px;
+    padding: 3px;
+    text-decoration: none;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin: 10px;
+}
 
-        #organChart {
-            margin: 20px;
-        }
-        #file-input {
-            visibility: hidden;
-        }
+button:active,
+button:hover {
+    outline: 0;
+}
+
+button span {
+    background-color: rgb(255, 255, 255);
+    padding: 16px 24px;
+    border-radius: 6px;
+    width: 100%;
+    height: 100%;
+    transition: 300ms;
+}
+
+button:hover span {
+    background: none;
+}
+
+button:active {
+    transform: scale(0.9);
+}
+
+#organChart {
+    margin: 20px;
+}
+#file-input {
+    visibility: hidden;
+}
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: white;
+    color: #ecf0f1;
+}
+
+h1 {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 3rem;
+    color: rgb(8, 107, 188);;
+}
+
+.dashboard-container {
+    display: grid;
+    grid-template-areas:
+        "left center right"
+        "left center right";
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 20px;
+    padding: 20px;
+    height: calc(100vh - 100px);
+}
+
+.card {
+    background: rgb(255, 255, 255);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 0 15px rgb(8, 107, 188);;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.center-card {
+    grid-area: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: none;
+    box-shadow: none;
+}
+
+.heatmap-container {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    height: 800px;
+    margin: 0 auto;
+}
+
+.heatmap-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    position: relative;
+    bottom: 180px;
+    z-index: 1;
+}
+
+svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+.body-part {
+    fill: rgba(241, 196, 15, 0.3);
+    cursor: pointer;
+    transition: fill 0.3s;
+    border: white;
+    box-shadow: 3px 7px white;
+}
+
+.body-part:hover {
+    fill: rgba(241, 196, 15, 0.7);
+}
+
+.tooltip {
+    position: absolute;
+    background: rgba(231, 76, 60, 0.9);
+    color: #ffffff;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    display: none;
+    z-index: 10;
+}
+
+.left-card, .right-card {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.stat-box {
+    background: rgb(255, 255, 255);
+    border-radius: 10px;
+    padding: 15px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 0 10px rgb(8, 107, 188);;
+}
+
+.stat-box h3 {
+    margin-bottom: 10px;
+    color: #1abc9c;
+    text-shadow: 0 0 5px #1abc9c;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 20px;
+    background: rgb(255, 255, 255);
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-bar span {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, #1abc9c, #16a085);
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.chart-container {
+    position: relative;
+    width: 100%;
+}
+
+#file-input {
+    margin: 40px;
+    padding: 20px;
+    visibility: hidden;
+}
+
+/* Hide the actual file input */
+#excelFile {
+    display: none;
+}
+input[type="file"]{
+    background-color: rgb(8, 107, 188);
+    background: radial-gradient(rgb(8, 107, 188),white);
+}
+#fileButton{
+    background-color: rgb(8, 107, 188);
+    transition: all 0.3s ease;
+    color: white;
+}
+
+
+
     </style>
 </head>
 <body>
     <h1>Advanced Health Dashboard</h1>
-
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                
+            </div>
+            <div class="col-md-6"></div>
+            <div class="col-md-3"></div>
+        </div>
+        <div class="row"></div>
+        
+    </div>
     <div class="dashboard-container">
-
+        
         <!-- Center Section: Heatmap -->
         <div class="card center-card">
-            <div id="tooltip" class="tooltip"></div>
-            <div class="heatmap-container">
-                <img src="humanbody.png" alt="Human Body Heatmap">
-                <svg xmlns="http://www.w3.org/2000/svg">
-                    <circle id="heart" class="body-part" cx="55%" cy="19%" r="5%"></circle>
-                    <circle id="liver" class="body-part" cx="48%" cy="26%" r="4%"></circle>
-                    <circle id="thyroid" class="body-part" cx="52%" cy="9%" r="2%"></circle>
-                    <circle id="Kidneys" class="body-part" cx="40%" cy="39%" r="3%"></circle>
-                    <circle id="Kidneys" class="body-part" cx="65%" cy="39%" r="3%"></circle>
-                    <circle id="Bones" class="body-part" cx="80%" cy="39%" r="2%"></circle>
-                    <circle id="Nerves" class="body-part" cx="28%" cy="32%" r="1.5%"></circle>
-                </svg>
+            <div class="row">
+                <div id="tooltip" class="tooltip"></div>
+                <div class="heatmap-container">
+                    <img src="front.png" alt="Human Body Heatmap">
+                    <svg xmlns="http://www.w3.org/2000/svg">
+                        <circle id="heart" class="body-part" cx="55%" cy="19%" r="5%"></circle>
+                        <circle id="liver" class="body-part" cx="48%" cy="26%" r="4%"></circle>
+                        <circle id="thyroid" class="body-part" cx="52%" cy="9%" r="2%"></circle>
+                        <circle id="Kidneys" class="body-part" cx="40%" cy="39%" r="3%"></circle>
+                        <circle id="Kidneys" class="body-part" cx="65%" cy="39%" r="3%"></circle>
+                        <circle id="Bones" class="body-part" cx="80%" cy="39%" r="2%"></circle>
+                        <circle id="Nerves" class="body-part" cx="28%" cy="32%" r="1.5%"></circle>
+                        
+                    </svg>
+                    
+                </div>
+
             </div>
         </div>
 
@@ -253,24 +466,51 @@
                     <button id="visualizeButton" style="display: none;">Visualize</button>
                 </div>
                 <canvas id="organChart"></canvas>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: rgba(0,0,121,0.7);"></div>
+                        <div class="legend-label">Healthy</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: rgba(0,79,185,0.7);"></div>
+                        <div class="legend-label">Moderate Health</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: rgba(23,233,220,0.7);"></div>
+                        <div class="legend-label">Slightly Unhealthy</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: rgba(193,252,82,0.7);"></div>
+                        <div class="legend-label">Unhealthy</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: rgba(227,253,21,0.7);"></div>
+                        <div class="legend-label">Very Unhealthy</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: rgba(255,101,0,0.7);"></div>
+                        <div class="legend-label">Severely Unhealthy</div>
+                    </div>
+                </div>
             </div>
+            
         </div>
     </div>
 
     <script>
-        let abnormal = [];
-        document.getElementById("myForm").onsubmit = function(event) {
+        
+    document.getElementById("myForm").onsubmit = function(event) {
     event.preventDefault();  // Prevent form submission to handle validation
-
+    
     let genderSelected = false;
-    let genderValue = null;
+    let selectedGenderValue = null;
 
     // Check if any radio button in the gender group is selected
     const genderRadios = document.getElementsByName("gen");
     for (let i = 0; i < genderRadios.length; i++) {
         if (genderRadios[i].checked) {
             genderSelected = true;
-            genderValue = genderRadios[i].value; // Get the value of the selected radio button
+            selectedGenderValue = genderRadios[i].value; // Get the value of the selected radio button
             break;
         }
     }
@@ -280,11 +520,12 @@
         document.getElementById("file-input").style.visibility = "hidden";
     } else {
         document.getElementById("file-input").style.visibility = "visible";
-        
         // Redirect based on the selected gender
-        if (genderValue === '1') {
+        if (selectedGenderValue === '1') {
             window.location.replace("heatmale.html");
-        } 
+        } else {
+             // Assuming you have a separate page for females
+        }
     }
 }
 
@@ -318,7 +559,7 @@
                         result[sheetName] = sheetData.slice(0, 2); // Limit to first 2 rows
                         console.log(`${sheetName} data found`);
                     } else {
-                        console.warn(Sheet `${sheetName}" not found in the Excel file.`);
+                        console.warn(`Sheet "${sheetName}" not found in the Excel file.`);
                         result[sheetName] = [];
                     }
                 });
@@ -410,23 +651,19 @@ if (!isDataLoaded) {
             // Calculate heart health
             if (Cholestrol > 200) {
                 heart_health -= 15;
-                abnormal.push(`cholestrol:${heart_health}`);
             }
             if (age <= 19) {
                 if (!(43 <= HDL && HDL <= 47)) {
                     heart_health -= 15;
-                    abnormal.push(`HDL:${HDL}`);
                 }
             } else {
                 if (gender == 1) {
                     if (!(38 <= HDL && HDL <= 42)) {
                         heart_health -= 15;
-                        abnormal.push(`HDL:${HDL}`);
                     }
                 } else {
                     if (!(48 <= HDL && HDL <= 52)) {
                         heart_health -= 15;
-                        abnormal.push(`HDL:${HDL}`);
                     }
                 }
             }
@@ -434,42 +671,32 @@ if (!isDataLoaded) {
                 // nothing
             } else if (101 <= LDL && LDL <= 129) {
                 heart_health -= 3;
-                abnormal.push(`LDL:${LDL}`);
             } else if (130 <= LDL && LDL <= 160) {
                 heart_health -= 5;
-                abnormal.push(`LDL:${LDL}`);
             } else if (161 <= LDL && LDL <= 189) {
                 heart_health -= 7;
-                abnormal.push(`LDL:${LDL}`);
             } else {
                 heart_health -= 15;
-                abnormal.push(`LDL:${LDL}`);
             }
             if (age >= 18) {
                 if (Triglycerides <= 150) {
                     // nothing
                 } else if (151 <= Triglycerides && Triglycerides <= 199) {
                     heart_health -= 5;
-                    abnormal.push(`Triglycerides:${Triglycerides}`);
                 } else if (200 <= Triglycerides && Triglycerides <= 499) {
                     heart_health -= 7;
-                    abnormal.push(`Triglycerides:${Triglycerides}`);
                 } else {
                     heart_health -= 15;
-                    abnormal.push(`Triglycerides:${Triglycerides}`);
                 }
             } else {
                 if (Triglycerides <= 90) {
                     // nothing
                 } else if (91 <= Triglycerides && Triglycerides <= 150) {
                     heart_health -= 5;
-                    abnormal.push(`Triglycerides:${Triglycerides}`);
                 } else if (151 <= Triglycerides && Triglycerides <= 199) {
                     heart_health -= 7;
-                    abnormal.push(`Triglycerides:${Triglycerides}`);
                 } else {
                     heart_health -= 15;
-                    abnormal.push(`Triglycerides:${Triglycerides}`);
                 }
             }
 
@@ -477,53 +704,41 @@ if (!isDataLoaded) {
             BilT = BilD + BilI;
             if (!(0.1 <= BilT && BilT <= 1.0)) {
                 liver_health -= 5;
-                abnormal.push(`Billirubin Total: ${BilT}`);
                 if (!(0.1 <= BilI && BilI <= 0.7)) {
                     liver_health -= 5;
-                    abnormal.push(`Billirubin Indirect: ${BilI}`);
                 }
                 if (!(0.0 <= BilD && BilD <= 0.3)) {
                     liver_health -= 5;
-                    abnormal.push(`Billirubin Direct: ${BilD}`);
                 }
             }
             if (!(10 <= SGOT && SGOT <= 50)) {
                 liver_health -= 5;
-                abnormal.push(`SGOT: ${SGOT}`);
             }
             if (!(10 <= SGPT && SGPT <= 60)) {
                 liver_health -= 5;
-                abnormal.push(`SGPT: ${SGPT}`);
             }
             if (!(30 <= ALP && ALP <= 120)) {
                 liver_health -= 5;
-                abnormal.push(`ALP: ${ALP}`);
             }
             if (!(6.0 <= Protein && Protein <= 8.3)) {
                 liver_health -= 5;
-                abnormal.push(`Protein: ${Protein}`);
             }
             if (!(3.5 <= Albumin && Albumin <= 5.0)) {
                 liver_health -= 5;
-                abnormal.push(`Albumin: ${Albumin}`);
             }
             if (!(2.0 <= Globulin && Globulin <= 3.5)) {
                 liver_health -= 5;
-                abnormal.push(`Globulin: ${Globulin}`);
             }
             if (A_G_Ratio < 1.0) {
                 liver_health -= 5;
-                abnormal.push(`A/G Ratio: ${A_G_Ratio}`);
             }
 
             // Calculate kidney health
             if (!(7 <= BUN && BUN <= 20)) {
                 kidney_health -= 9;
-                abnormal.push(`BUN: ${BUN}`);
             }
             if (!(0.5 <= Creatinine && Creatinine <= 1.5)) {
                 kidney_health -= 9;
-                abnormal.push(`creatinine: ${Creatinine}`);
             }
             if (!(3.0 <= Uric_Acid && Uric_Acid <= 7.0)) {
                 kidney_health -= 9;
@@ -581,12 +796,12 @@ if (!isDataLoaded) {
             // Update tooltip and organ health display
             const tooltip = document.getElementById("tooltip");
             const organData = {
-                heart: { text: `Heart: ${heart_health}% Healthy, health: heart_health` },
-                Bones: { text: `Bones: ${bone_health}% Healthy, health: bone_health` },
-                Nerves: { text: `Nerve Health: ${nerve_health}% Healthy, health: nerve_health` },
-                liver: { text: `Liver: ${liver_health}% Healthy, health: liver_health` },
-                thyroid: { text: `Thyroid: ${thyroid_health}% Healthy, health: thyroid_health `},
-                Kidneys: { text: `Kidneys: ${kidney_health}% Healthy, health: kidney_health` }
+                heart: { text: `Heart: ${heart_health}% Healthy`, health: heart_health },
+                Bones: { text: `Bones: ${bone_health}% Healthy`, health: bone_health },
+                Nerves: { text: `Nerve Health: ${nerve_health}% Healthy`, health: nerve_health },
+                liver: { text: `Liver: ${liver_health}% Healthy`, health: liver_health },
+                thyroid: { text: `Thyroid: ${thyroid_health}% Healthy`, health: thyroid_health },
+                Kidneys: { text: `Kidneys: ${kidney_health}% Healthy`, health: kidney_health }
             };
 
             document.querySelectorAll(".body-part").forEach(part => {
@@ -656,6 +871,7 @@ if (!isDataLoaded) {
 
             console.log(overall_health);
 
+            /* Chart.js for the organ health chart
             const ctx = document.getElementById("organChart").getContext("2d");
             const data = {
                 labels: ['Heart', 'Liver', 'Kidneys', 'Thyroid', 'Bones', 'Nerves'],
@@ -668,7 +884,7 @@ if (!isDataLoaded) {
                 type: 'pie',
                 data: data
             };
-            new Chart(document.getElementById('organChart'), config);
+            new Chart(document.getElementById('organChart'), config);*/
         });
     </script>
 </body>
